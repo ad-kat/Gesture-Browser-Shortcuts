@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gesture-Based Browser Shortcuts (Prototype)</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>Gesture Shortcuts – Prototype</h1>
+    <label class="toggle">
+      <input type="checkbox" id="enableToggle" checked />
+      <span>Enable gestures</span>
+    </label>
+  </header>
+
+  <main>
+    <div class="panel">
+      <p>Draw a gesture on the canvas:</p>
+      <ul>
+        <li><strong>◯ Circle</strong> → Reload page</li>
+        <li><strong>→ Line Right</strong> → Forward</li>
+        <li><strong>← Line Left</strong> → Back</li>
+        <li><strong>Z shape</strong> → New Tab</li>
+      </ul>
+      <button id="clearBtn">Clear Canvas</button>
+    </div>
+
+    <canvas id="pad" width="800" height="450" aria-label="Drawing area"></canvas>
+  </main>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
