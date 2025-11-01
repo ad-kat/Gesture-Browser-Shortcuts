@@ -17,6 +17,25 @@ ctx.strokeStyle = '#8fb3ff';
 let drawing = false;
 let points = [];
 
+// --- Simple gesture metrics ---
+const logs = [];
+let totalGestures = 0;
+let successfulGestures = 0;
+let totalLatency = 0;
+
+function logGesture(name, score, duration, success) {
+  logs.push({ name, score, duration, success, timestamp: new Date() });
+  totalGestures++;
+  if (success) successfulGestures++;
+  totalLatency += duration;
+  updateStats();
+}
+function updateStats() {
+  const accuracy = successfulGestures ? ((successfulGestures / totalGestures) * 100).toFixed(1) : 0;
+  const avgLatency = totalGestures ? (totalLatency / totalGestures).toFixed(1) : 0;
+  document.getElementById('metrics').textContent =
+    `Gestures: ${totalGestures} | Accuracy: ${accuracy}% | Avg Latency: ${avgLatency} ms`;
+}
 function getPos(e) {
   const rect = canvas.getBoundingClientRect();
   if (e.touches && e.touches[0]) {
@@ -31,26 +50,41 @@ function getPos(e) {
     };
   }
 }
-
-function startDraw(e) {
-  if (!document.getElementById('enableToggle').checked) return;
-  drawing = true;
-  points = [];
-  const p = getPos(e);
-  points.push(p);
-  ctx.beginPath();
-  ctx.moveTo(p.x, p.y);
-  e.preventDefault();
+// --- Performance utilities ---
+function debounce(fn, delay) {
+  let timeout;
+  return function (...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => fn.apply(this, args), delay);
+  };
+}
+// --- Performance utility ---
+function throttle(fn, limit) {
+  let inThrottle = false;
+  return function throttled(...args) {
+    if (!inThrottle) {
+      fn.apply(this, args);
+      inThrottle = true;
+      setTimeout(() => { inThrottle = false; }, limit);
+    }
+  };
 }
 function moveDraw(e) {
   if (!drawing) return;
   const p = getPos(e);
+  const last = points[points.length - 1];
+  const dx = p.x - last.x;
+  const dy = p.y - last.y;
+  const dist = Math.hypot(dx, dy);
+
+  if (dist < 1.5) return; // ignore micro-movements
+
   points.push(p);
   ctx.lineTo(p.x, p.y);
   ctx.stroke();
   e.preventDefault();
 }
-function endDraw(e) {
+/* function endDraw(e) {
   if (!drawing) return;
   drawing = false;
 
@@ -64,17 +98,56 @@ function endDraw(e) {
     }
   }
   e.preventDefault();
+} */
+function endDraw(e) {
+  if (!drawing) return;
+  drawing = false;
+
+  const duration = performance.now() - gestureStartTime; // latency measurement
+
+  if (points.length > 10) {
+    const { name, score } = recognize(points);
+    const success = score > 0.6;
+    logGesture(name, score, duration, success);
+
+    if (success) {
+      performAction(name);
+    } else {
+      toast('🤔 Gesture not recognized (try clearer shape)');
+    }
+  }
+  e.preventDefault();
 }
 
+let gestureStartTime = 0;
+
+function startDraw(e) {
+  if (!document.getElementById('enableToggle').checked) return;
+  drawing = true;
+  points = [];
+  gestureStartTime = performance.now();
+  const p = getPos(e);
+  points.push(p);
+  ctx.beginPath();
+  ctx.moveTo(p.x, p.y);
+  e.preventDefault();
+}
+
+
+
+// Mouse events
 canvas.addEventListener('mousedown', startDraw);
-canvas.addEventListener('mousemove', moveDraw);
+canvas.addEventListener('mousemove', throttle(moveDraw, 5));  // <-- throttled
 canvas.addEventListener('mouseup', endDraw);
 canvas.addEventListener('mouseleave', endDraw);
 
+// Touch events (keep passive:false so we can preventDefault while drawing)
 canvas.addEventListener('touchstart', startDraw, { passive: false });
-canvas.addEventListener('touchmove', moveDraw, { passive: false });
+canvas.addEventListener('touchmove', throttle(moveDraw, 5), { passive: false }); // <-- throttled
 canvas.addEventListener('touchend', endDraw, { passive: false });
 canvas.addEventListener('touchcancel', endDraw, { passive: false });
+
+
 
 document.getElementById('clearBtn').addEventListener('click', () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -252,6 +325,8 @@ function templateZ() {
   return normalize(pts);
 }
 
+
+
 // Prepare templates
 const TEMPLATES = [
   { name: 'line-right', pts: templateLine('right') },
@@ -363,6 +438,15 @@ function performAction(name) {
   break;
 
   }
+}
+function summarizeSession() {
+  const accuracy = ((successfulGestures / totalGestures) * 100).toFixed(1);
+  const avgLatency = (totalLatency / totalGestures).toFixed(1);
+  console.table(logs.slice(-5)); // show last 5 gestures
+  alert(`Session Summary:
+  Total Gestures: ${totalGestures}
+  Accuracy: ${accuracy}%
+  Avg Input-to-Action Latency: ${avgLatency} ms`);
 }
 
 // Enable/disable toggle just blocks drawing start

@@ -24,10 +24,17 @@
         <li><strong>← Line Left</strong> → Back</li>
         <li><strong>Z shape</strong> → New Tab</li>
       </ul>
-      <button id="clearBtn">Clear Canvas</button>
+      <div class="button-row">
+        <button id="clearBtn">Clear Canvas</button>
+        <button id="summaryBtn" onclick="summarizeSession()">Show Summary</button>
+      </div>
     </div>
 
-    <canvas id="pad" width="800" height="450" aria-label="Drawing area"></canvas>
+      <canvas id="pad" width="800" height="450" aria-label="Drawing area"></canvas>
+      <div id="metrics" style="margin-top:10px; font-size:14px; color:#c7d9ff;">
+        Gestures: 0 | Accuracy: 0% | Avg Latency: 0 ms
+      </div>
+
   </main>
 
   <div id="toast" role="status" aria-live="polite"></div>
