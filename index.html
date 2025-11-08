@@ -3,41 +3,95 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Gesture-Based Browser Shortcuts (Prototype)</title>
+  <title>Aurora Market — Fresh & Everyday</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <!-- Top nav -->
   <header class="topbar">
-    <h1>Gesture Shortcuts – Prototype</h1>
-    <label class="toggle">
-      <input type="checkbox" id="enableToggle" checked />
-      <span>Enable gestures</span>
-    </label>
+    <div class="left">
+      <div class="logo">Aurora<span>Market</span></div>
+      <nav class="nav">
+        <a data-route="home" class="navlink active" href="#/home">Home</a>
+        <a data-route="fresh" class="navlink" href="#/fresh">Fresh</a>
+        <a data-route="snacks" class="navlink" href="#/snacks">Snacks</a>
+        <a data-route="beverages" class="navlink" href="#/beverages">Beverages</a>
+        <a data-route="household" class="navlink" href="#/household">Household</a>
+      </nav>
+    </div>
+    <div class="right">
+      <div class="search">
+        <input id="searchInput" placeholder="Search fruits, drinks, noodles…" />
+        <button id="searchBtn">Search</button>
+      </div>
+      <label class="toggle" title="Enable/Disable gesture drawing">
+        <input type="checkbox" id="enableToggle" checked />
+        <span>Gestures</span>
+      </label>
+      <a class="cart" href="#/cart">🛒 <span id="cartCount">0</span></a>
+    </div>
   </header>
 
-  <main>
-    <div class="panel">
-      <p>Draw a gesture on the canvas:</p>
-      <ul>
-        <li><strong>◯ Circle</strong> → Reload page</li>
-        <li><strong>→ Line Right</strong> → Forward</li>
-        <li><strong>← Line Left</strong> → Back</li>
-        <li><strong>Z shape</strong> → New Tab</li>
-      </ul>
-      <div class="button-row">
-        <button id="clearBtn">Clear Canvas</button>
-        <button id="summaryBtn" onclick="summarizeSession()">Show Summary</button>
+  <!-- Promo bar -->
+  <section class="promo">
+    <div class="hero">
+      <div class="hero-text">
+        <h2>Same-day delivery on essentials</h2>
+        <p>Fresh produce, pantry staples, and treats—delivered fast.</p>
+        <div class="hero-cta">
+          <button data-route="fresh" class="cta">Shop Fresh</button>
+          <button data-route="snacks" class="cta ghost">Snacks</button>
+        </div>
       </div>
     </div>
+  </section>
 
-      <canvas id="pad" width="800" height="450" aria-label="Drawing area"></canvas>
-      <div id="metrics" style="margin-top:10px; font-size:14px; color:#c7d9ff;">
-        Gestures: 0 | Accuracy: 0% | Avg Latency: 0 ms
-      </div>
+  <!-- Main grid -->
+  <main class="layout">
+    <!-- Left categories -->
+    <aside class="sidebar">
+      <h3>Categories</h3>
+      <ul class="cats">
+        <li><a data-route="fresh" href="#/fresh">Fresh Produce</a></li>
+        <li><a data-route="snacks" href="#/snacks">Snacks & Sweets</a></li>
+        <li><a data-route="beverages" href="#/beverages">Beverages</a></li>
+        <li><a data-route="household" href="#/household">Household</a></li>
+        <li><a data-route="deals" href="#/deals">Deals</a></li>
+      </ul>
+      <!-- (Removed the visible gestures panel from here) -->
+    </aside>
 
+    <!-- Right content -->
+    <section id="app" class="content" aria-live="polite"></section>
   </main>
 
+  <!-- Toast + HUD (small, unobtrusive) -->
   <div id="toast" role="status" aria-live="polite"></div>
+  <div id="hud" aria-hidden="true">—</div>
+
+  <!-- Invisible top-right hover flyout with instructions/metrics -->
+  <div class="gestures-widget" aria-live="polite">
+    <div class="gestures-hotspot" aria-hidden="true"></div>
+    <div class="gestures-flyout">
+      <p class="flyout-title"><strong>Gesture Shortcuts</strong></p>
+      <ul class="gestures-list">
+        <li><strong>◯ Circle</strong> → Reload page</li>
+        <li><strong>&lt; Line Left</strong> → Back</li>
+        <li><strong>&gt; Line Right</strong> → Forward</li>
+        <li><strong>Z shape</strong> → New Tab (Google)</li>
+      </ul>
+      <button id="summaryBtn" class="flyout-btn">Show Summary</button>
+      <div class="flyout-metrics">
+        Gestures: <span id="mCount">0</span> |
+        Accuracy: <span id="mAcc">0</span>% |
+        Avg Latency: <span id="mLatency">0</span> ms
+      </div>
+      <div class="flyout-hint">Hover top-right to show • Press “?” to toggle</div>
+    </div>
+  </div>
+
+  <!-- Fullscreen drawing layer: never blocks clicks/scroll -->
+  <canvas id="overlay"></canvas>
 
   <script src="app.js"></script>
 </body>

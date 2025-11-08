@@ -1,35 +1,103 @@
-* { box-sizing: border-box; }
-body {
-  margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background: #0b1020; color: #e8ecf3;
+/* Reset-ish */
+*{box-sizing:border-box} html,body{height:100%}
+:root{
+  --bg:#ffffff; --ink:#222; --muted:#666; --brand:#2a7cf7; --pill:#f1f5ff;
+  --line:#e9edf5; --card:#fff; --accent:#2a7cf7; --badge:#ff5757;
 }
-.topbar {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 16px; border-bottom: 1px solid #20273d; background: #0f1630;
+body{margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:var(--bg); color:var(--ink)}
+
+/* Top bar */
+.topbar{
+  position:sticky; top:0; z-index:10; display:flex; align-items:center; justify-content:space-between;
+  gap:12px; padding:12px 16px; background:#fff; border-bottom:1px solid var(--line);
 }
-h1 { font-size: 16px; margin: 0; }
-.toggle { display: inline-flex; gap: 8px; align-items: center; font-size: 14px; }
-main { display: grid; grid-template-columns: 280px 1fr; gap: 16px; padding: 16px; }
-.panel {
-  background: #12193a; border: 1px solid #243057; border-radius: 12px; padding: 12px;
-  font-size: 14px;
+.logo{font-weight:800; font-size:20px; color:var(--ink)}
+.logo span{color:var(--brand)}
+.topbar .left{display:flex; align-items:center; gap:16px}
+.nav{display:flex; gap:10px; flex-wrap:wrap}
+.navlink{padding:8px 10px; color:#333; text-decoration:none; border-radius:8px}
+.navlink:hover{background:#f6f8ff}
+.navlink.active{background:var(--pill); color:var(--brand); font-weight:600}
+
+.topbar .right{display:flex; align-items:center; gap:12px}
+.search{display:flex; gap:6px; align-items:center}
+.search input{width:240px; padding:8px 10px; border:1px solid var(--line); border-radius:10px; outline:none}
+.search button{padding:8px 12px; border:1px solid var(--line); background:#fff; border-radius:10px; cursor:pointer}
+.search button:hover{background:#f6f8ff}
+.toggle{display:inline-flex; gap:6px; align-items:center; font-size:13px}
+.cart{color:#111; text-decoration:none; background:#f7f9ff; padding:6px 10px; border-radius:999px; border:1px solid var(--line)}
+
+.promo{border-bottom:1px solid var(--line); background:#fafcff}
+.hero{
+  margin:12px auto; max-width:1100px; min-height:140px; border-radius:16px; border:1px solid var(--line);
+  background:linear-gradient(90deg,#f0f6ff,#ffffff); display:flex; align-items:center; padding:20px;
 }
-.panel ul { margin: 8px 0 12px 18px; line-height: 1.5; }
-button {
-  background: #1b2450; color: #dfe6ff; border: 1px solid #2b3a76; padding: 8px 12px;
-  border-radius: 10px; cursor: pointer;
+.hero h2{margin:0 0 6px 0}
+.hero p{margin:0 0 10px 0; color:var(--muted)}
+.hero-cta{display:flex; gap:10px}
+.cta{background:var(--brand); color:#fff; border:none; border-radius:10px; padding:8px 12px; cursor:pointer}
+.cta.ghost{background:#fff; color:var(--brand); border:1px solid var(--brand)}
+.cta:hover{filter:brightness(0.95)}
+
+.layout{display:grid; grid-template-columns:260px 1fr; gap:16px; max-width:1200px; margin:16px auto; padding:0 12px}
+.sidebar h3{margin:8px 0}
+.cats{list-style:none; padding:0; margin:8px 0 16px 0}
+.cats a{display:block; padding:8px 10px; border-radius:8px; text-decoration:none; color:#222}
+.cats a:hover{background:#f6f8ff}
+
+.content{display:grid; gap:16px}
+
+/* Product grid cards */
+.grid{display:grid; gap:12px; grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.card{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:8px}
+.thumb{height:140px; border-radius:10px; background:linear-gradient(135deg,#d4e6ff,#a8c9ff)}
+.card h4{margin:0}
+.price{font-weight:700}
+.badge{display:inline-block; font-size:12px; padding:2px 8px; border-radius:999px; background:#fff2f2; color:var(--badge); border:1px solid #ffd8d8}
+.actions{margin-top:auto; display:flex; gap:8px}
+button{cursor:pointer; padding:8px 10px; border-radius:10px; border:1px solid var(--line); background:#fff}
+button:hover{background:#f6f8ff}
+
+/* Toast & HUD (top-right) */
+#toast{
+  position:fixed; bottom:14px; left:50%; transform:translateX(-50%);
+  background:#111; color:#fff; padding:10px 14px; border-radius:10px; font-size:14px; opacity:0;
+  transition:opacity .2s ease; pointer-events:none; z-index:10001;
 }
-button:hover { background: #223066; }
-#pad {
-  width: 100%; height: auto; border: 1px dashed #2b3a76; border-radius: 12px;
-  background: #0f1531;
-  touch-action: none; /* allow custom touch drawing */
+#toast.show{opacity:1}
+#hud{
+  position:fixed; top:10px; right:12px; background:#111; color:#fff; font-size:12px; padding:6px 8px; border-radius:8px; opacity:.85;
+  z-index:10001;
 }
-#toast {
-  position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
-  background: #101735; border: 1px solid #2b3a76; color: #cfe1ff;
-  padding: 10px 14px; border-radius: 10px; min-width: 240px; text-align: center;
-  opacity: 0; pointer-events: none; transition: opacity .2s ease;
-  font-size: 14px;
+
+/* Fullscreen overlay canvas (doesn't block interaction) */
+#overlay{
+  position:fixed; inset:0; width:100vw; height:100vh; background:transparent;
+  pointer-events:none; /* critical: never block clicks/scroll */
+  touch-action:none;   /* we can preventDefault on touch while drawing */
+  z-index:10000;
 }
-#toast.show { opacity: 1; }
+
+/* ===== Invisible top-right hover flyout ===== */
+.gestures-widget{
+  position:fixed; top:6px; right:6px; z-index:10002;
+}
+.gestures-hotspot{
+  position:absolute; top:0; right:0;
+  width:32px; height:32px;
+  opacity:0; pointer-events:auto; /* invisible but hoverable */
+}
+.gestures-flyout{
+  position:absolute; top:0; right:0; transform:translateY(6px);
+  min-width:260px; max-width:320px;
+  background:#0f1630; color:#cfe1ff; border:1px solid #243057; border-radius:12px;
+  padding:10px 12px; box-shadow:0 8px 24px rgba(0,0,0,.35);
+  opacity:0; pointer-events:none; transition:opacity .18s ease;
+}
+.gestures-widget:hover .gestures-flyout{ opacity:1; pointer-events:auto; }
+.flyout-title{margin:0 0 6px 0}
+.gestures-list{margin:6px 0 10px 18px; line-height:1.5}
+.flyout-btn{width:100%; margin:6px 0 8px 0; background:#1b2450; color:#dfe6ff; border:1px solid #2b3a76; border-radius:8px; padding:8px 10px; cursor:pointer}
+.flyout-btn:hover{background:#223066}
+.flyout-metrics{font-size:12px; color:#9fb6ff}
+.flyout-hint{margin-top:6px; font-size:11px; color:#7f94d9}
