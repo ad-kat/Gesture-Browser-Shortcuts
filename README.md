@@ -59,6 +59,6 @@ Gesture-overlay-extension
 │ - Applies per-gesture confidence thresholds
 │
 └── icons/
-- Extension icons (optional)
+- icon128.png
 ```
 
