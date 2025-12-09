@@ -7,7 +7,7 @@ This repository contains the full source code for the system described in the ac
 ---
 
 ## 📁 Project Structure
-
+```text
 Gesture-overlay-extension
 │
 ├── manifest.json
@@ -60,3 +60,5 @@ Gesture-overlay-extension
 │
 └── icons/
 - Extension icons (optional)
+```
+
