@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Gesture-Based Browser Shortcuts",
+  "version": "1.0.0",
+  "description": "Use circle, arrow, and Z gestures to navigate: reload, back/forward, new tab, scroll to top/bottom.",
+  "permissions": ["scripting", "activeTab"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Enable gesture shortcuts on this page"
+  },
+  "icons": {
+    "128": "icons/icon128.png"
+  }
+}
